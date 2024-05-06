@@ -1,5 +1,4 @@
 import mysql.connector
-import streamlit as st
 
 conexao = mysql.connector.connect(
     host='LocalHost',
@@ -10,14 +9,15 @@ conexao = mysql.connector.connect(
 
 cursor = conexao.cursor()
 
+sql = '''
+INSERT INTO produtos(codigo_barras, descricao, descricao_completa, codigo, peso, um)
+VALUES
+("TESTE", "TESTE", "TESTE", "TESTE", 0.00, "kg");
+'''
+cursor.execute(sql)
+
 sql = 'SELECT * FROM produtos'
 cursor.execute(sql)
 
 for linha in cursor.fetchall():
-    st.write(linha)
-
-
-
-# comando para rodar: cd "Banco de Dados"
-# streamlit run conexao_banco_02.py
-
+    print(linha)
