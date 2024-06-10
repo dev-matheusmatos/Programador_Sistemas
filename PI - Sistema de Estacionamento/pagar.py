@@ -3,6 +3,7 @@ import mysql.connector
 import requests
 from PIL import Image
 from io import BytesIO
+from datetime import datetime
 
 st.set_page_config(
     page_title='Estacionamento',
@@ -60,11 +61,46 @@ with st.form('form-visualizar-dados', clear_on_submit=True):
                 st.write(f"Vaga: {estacionamento[0]}")
                 st.write(f"Hora de Entrada: {estacionamento[1]}")
 
+                # Registrar hora de saída do veículo
+                hora_saida = datetime.now()
+
+                cursor.execute("""
+                    UPDATE veiculo_estacionado
+                    SET hora_saida = %s
+                    WHERE placa_veiculo = %s AND hora_saida IS NULL
+                """, (hora_saida, informacoes_veiculo))
+                conexao.commit()
+
+                # Formatando hora de saída
+                hora_saida_formatada = hora_saida.strftime('%Y-%m-%d %H:%M:%S')
+                st.write(f"Hora de Saída: {hora_saida_formatada}")
+
+                # Calcular valor a ser pago
+                hora_entrada = estacionamento[1]
+                tempo_estacionado = hora_saida - hora_entrada
+                horas_estacionado = tempo_estacionado.total_seconds() / 3600
+                valor_a_pagar = round(horas_estacionado * 5, 2)
+
+                st.write(f"Tempo estacionado: {horas_estacionado:.2f} horas")
+                st.write(f"Valor a ser pago: R$ {valor_a_pagar:.2f}")
+
                 # Gerar QR Code com informações do veículo e da vaga
-                dados_qr_code = f"Veículo: {veiculo[1]}, Vaga: {estacionamento[0]}"
+                dados_qr_code = f"""
+Veículo: {veiculo[1]} 
+
+Vaga: {estacionamento[0]} 
+
+Hora de Entrada: {hora_entrada}
+
+Hora de Saída: {hora_saida_formatada}
+
+Valor a Pagar: R$ {valor_a_pagar:.2f}
+
+Chave PIX: 
+"""
                 qr_code_img = gerar_qr_code_pix(dados_qr_code)
                 if qr_code_img:
-                    st.image(qr_code_img, caption='QR Code com informações do veículo e da vaga')
+                    st.image(qr_code_img, caption='QR Code com informações do veículo, vaga e valor a pagar')
             else:
                 st.warning('Veículo não está estacionado no momento.')
         else:
