@@ -32,7 +32,7 @@ conexao = mysql.connector.connect(
 
 cursor = conexao.cursor()
 
-st.title('Página dos dados')
+st.title('Pagamento')
 
 with st.form('form-visualizar-dados', clear_on_submit=True):
     # Cria o input para puxar a placa digitada com as informações cadastradas
@@ -96,7 +96,7 @@ Hora de Saída: {hora_saida_formatada}
 
 Valor a Pagar: R$ {valor_a_pagar:.2f}
 
-Chave PIX: 
+Chave PIX: 1a887996-985d-4e0d-8b94-85b342f6f208
 """
                 qr_code_img = gerar_qr_code_pix(dados_qr_code)
                 if qr_code_img:
