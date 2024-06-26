@@ -15,7 +15,7 @@ st.title('Estacionamento')
 conexao = mysql.connector.connect(
     host='localhost',
     username='root',
-    password='',
+    password='root',
     database='estacionamento'
 )
 cursor = conexao.cursor()
